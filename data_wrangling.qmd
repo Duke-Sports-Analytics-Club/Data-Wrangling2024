@@ -189,6 +189,8 @@ Let's answer these questions together using our dplyr functions.
 - Does usage percentage, `USG%`, vary on average between positions?
 - Which teams are the best at getting to the FT line? (Note that we cannot merely combine the players FT attempt rate)
 
+- Time permitting, categorizing with quantiles
+
 
 
 
