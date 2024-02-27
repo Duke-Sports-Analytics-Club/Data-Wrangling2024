@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dillan Sant">
+<meta name="dcterms.date" content="2024-02-27">
+
+<title>Data Wrangling Workshop</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="data_wrangling_files/libs/clipboard/clipboard.min.js"></script>
+<script src="data_wrangling_files/libs/quarto-html/quarto.js"></script>
+<script src="data_wrangling_files/libs/quarto-html/popper.min.js"></script>
+<script src="data_wrangling_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="data_wrangling_files/libs/quarto-html/anchor.min.js"></script>
+<link href="data_wrangling_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="data_wrangling_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="data_wrangling_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="data_wrangling_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="data_wrangling_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Wrangling Workshop</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dillan Sant </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 27, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="intro" class="level1">
+<h1>Intro</h1>
+<section id="importance-of-data-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="importance-of-data-wrangling">Importance of Data Wrangling</h2>
+<p>When it comes to data science projects, data cleaning and wrangling is arguably the most important phase of the project. While most of the exciting analysis is usually done through exploratory data analysis, creating visualizations, or modeling, none of that would be possible without first preparing your data for analysis. Sports data specifically is often ridiculously messy upon initially gathering the data. Today, we will use relatively clean player data from Basketball Reference to emphasize some key data wrangling functions, but typically sports data will be messier than this when analyzing play-by-play data for example. Let’s start by loading in our data and loading in the <code>tidyverse</code> package, a comprehensive R package focusing on working with tidy data. The <code>tidyverse</code> package contains the <code>dplyr</code> package, which specifically contains functions and framework for data wrangling in an efficient and intuitive manner</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">message =</span> F, <span class="at">warning =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here we load the data using the <code>read_csv()</code> function, which comes with <code>tidyverse</code>. For this workshop we will look at player data, both standard and advnaced statistics which come separately on Basketball Reference</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"data/nbatotals23.csv"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>advanced23 <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">"data/nbaadvanced23.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pipe-operator" class="level2">
+<h2 class="anchored" data-anchor-id="pipe-operator">Pipe Operator</h2>
+<p>Another handy thing about <code>tidyverse</code> is the <code>macgrittr</code> pipe. The pipe operator, which is central to the <code>tidyverse</code>, takes the preluding object passed through the pipe and passes it into the object on the right hand side of the pipe. For example, these two lines of code do the same thing:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(players23, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 31
+     Rk Player Pos     Age Tm        G    GS    MP    FG   FGA `FG%`  `3P` `3PA`
+  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     1 Preci… C-PF     24 TOT      50    11  1093   169   339 0.499    20    75
+2     1 Preci… C        24 TOR      25     0   437    78   170 0.459    13    47
+3     1 Preci… PF       24 NYK      25    11   656    91   169 0.538     7    28
+4     2 Bam A… C        26 MIA      46    46  1592   355   693 0.512     1    11
+5     3 Ochai… SG       23 TOT      56    10  1076   117   275 0.425    52   157
+# ℹ 18 more variables: `3P%` &lt;dbl&gt;, `2P` &lt;dbl&gt;, `2PA` &lt;dbl&gt;, `2P%` &lt;dbl&gt;,
+#   `eFG%` &lt;dbl&gt;, FT &lt;dbl&gt;, FTA &lt;dbl&gt;, `FT%` &lt;dbl&gt;, ORB &lt;dbl&gt;, DRB &lt;dbl&gt;,
+#   TRB &lt;dbl&gt;, AST &lt;dbl&gt;, STL &lt;dbl&gt;, BLK &lt;dbl&gt;, TOV &lt;dbl&gt;, PF &lt;dbl&gt;, PTS &lt;dbl&gt;,
+#   `Player-additional` &lt;chr&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 31
+     Rk Player Pos     Age Tm        G    GS    MP    FG   FGA `FG%`  `3P` `3PA`
+  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     1 Preci… C-PF     24 TOT      50    11  1093   169   339 0.499    20    75
+2     1 Preci… C        24 TOR      25     0   437    78   170 0.459    13    47
+3     1 Preci… PF       24 NYK      25    11   656    91   169 0.538     7    28
+4     2 Bam A… C        26 MIA      46    46  1592   355   693 0.512     1    11
+5     3 Ochai… SG       23 TOT      56    10  1076   117   275 0.425    52   157
+# ℹ 18 more variables: `3P%` &lt;dbl&gt;, `2P` &lt;dbl&gt;, `2PA` &lt;dbl&gt;, `2P%` &lt;dbl&gt;,
+#   `eFG%` &lt;dbl&gt;, FT &lt;dbl&gt;, FTA &lt;dbl&gt;, `FT%` &lt;dbl&gt;, ORB &lt;dbl&gt;, DRB &lt;dbl&gt;,
+#   TRB &lt;dbl&gt;, AST &lt;dbl&gt;, STL &lt;dbl&gt;, BLK &lt;dbl&gt;, TOV &lt;dbl&gt;, PF &lt;dbl&gt;, PTS &lt;dbl&gt;,
+#   `Player-additional` &lt;chr&gt;</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="data-wrangling" class="level1">
+<h1>Data Wrangling</h1>
+<section id="overview-of-crucial-dplyr-functions" class="level2">
+<h2 class="anchored" data-anchor-id="overview-of-crucial-dplyr-functions">Overview of Crucial dplyr Functions</h2>
+<ul>
+<li><code>select()</code></li>
+<li><code>filter()</code></li>
+<li><code>mutate()</code></li>
+<li><code>group_by()</code></li>
+<li><code>summarise()</code></li>
+<li><code>arrange()</code></li>
+<li><code>rename()</code></li>
+<li><code>drop_na()</code></li>
+</ul>
+</section>
+<section id="select" class="level2">
+<h2 class="anchored" data-anchor-id="select">Select</h2>
+<p>The <code>select()</code> function can be applied to a dataframe, selecting the columns of a dataframe to displays. Lets say we have a large dataframe with many columns/variables but only want to analyze a subset of these columns or only display certain columns in a table. Let’s select only the players’ names, team, and games played.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Player, Tm, G) <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  Player           Tm        G
+  &lt;chr&gt;            &lt;chr&gt; &lt;dbl&gt;
+1 Precious Achiuwa TOT      50
+2 Precious Achiuwa TOR      25
+3 Precious Achiuwa NYK      25
+4 Bam Adebayo      MIA      46
+5 Ochai Agbaji     TOT      56</code></pre>
+</div>
+</div>
+<p>Notice how we have multiple rows for Precious Achiuwa, an observation for his statistics with the Raptors, one for his statistics with the Knicks, and another for his combined statistics. We will address this later when we get more comfortable with more functions.</p>
+</section>
+<section id="filter" class="level2">
+<h2 class="anchored" data-anchor-id="filter">Filter</h2>
+<p>The <code>filter()</code> function is used to filter the dataframe for observations, given a certain condition. Let’s suppose we’re working on a project about veteran production. For this, we might want to only analyze players over the age of 32, for example. Let’s filter the dataset to include only players who are over 32 years old.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="sc">%&gt;%</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Age <span class="sc">&gt;</span> <span class="dv">32</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 71 × 31
+      Rk Player      Pos     Age Tm        G    GS    MP    FG   FGA `FG%`  `3P`
+   &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1    34 Nicolas Ba… PF       35 TOT      37    29   882    72   140 0.514    46
+ 2    34 Nicolas Ba… PF       35 LAC       3     0    54     3     8 0.375     2
+ 3    34 Nicolas Ba… PF       35 PHI      34    29   828    69   132 0.523    44
+ 4    41 Patrick Be… PG       35 TOT      53     5  1011   112   266 0.421    40
+ 5    41 Patrick Be… PG       35 PHI      47     5   919   104   241 0.432    35
+ 6    41 Patrick Be… PG       35 MIL       6     0    92     8    25 0.32      5
+ 7    49 Bojan Bogd… PF-SF    34 TOT      32    27  1019   219   468 0.468    96
+ 8    49 Bojan Bogd… PF       34 DET      28    27   921   199   425 0.468    86
+ 9    49 Bojan Bogd… SF       34 NYK       4     0    98    20    43 0.465    10
+10    79 Jimmy Butl… PF       34 MIA      38    38  1281   255   508 0.502    38
+# ℹ 61 more rows
+# ℹ 19 more variables: `3PA` &lt;dbl&gt;, `3P%` &lt;dbl&gt;, `2P` &lt;dbl&gt;, `2PA` &lt;dbl&gt;,
+#   `2P%` &lt;dbl&gt;, `eFG%` &lt;dbl&gt;, FT &lt;dbl&gt;, FTA &lt;dbl&gt;, `FT%` &lt;dbl&gt;, ORB &lt;dbl&gt;,
+#   DRB &lt;dbl&gt;, TRB &lt;dbl&gt;, AST &lt;dbl&gt;, STL &lt;dbl&gt;, BLK &lt;dbl&gt;, TOV &lt;dbl&gt;, PF &lt;dbl&gt;,
+#   PTS &lt;dbl&gt;, `Player-additional` &lt;chr&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="mutate" class="level2">
+<h2 class="anchored" data-anchor-id="mutate">Mutate</h2>
+<p>The <code>mutate()</code> function creates new variables, based on a function of existing variables in the dataset. This is very handy when we get raw data, like totals for sports data and want to compute per game averages for example. Let’s mutate points per game to our dataframe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ppg =</span> PTS <span class="sc">/</span> G) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Player, Tm, G, ppg) <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+  Player           Tm        G   ppg
+  &lt;chr&gt;            &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 Precious Achiuwa TOT      50  8.04
+2 Precious Achiuwa TOR      25  7.72
+3 Precious Achiuwa NYK      25  8.36
+4 Bam Adebayo      MIA      46 20.3 
+5 Ochai Agbaji     TOT      56  5.41</code></pre>
+</div>
+</div>
+<p>Great, we have our PPG for each player, but now let’s save this to our dataframe for future use, which is not automatically done.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="ot">=</span> players23 <span class="sc">%&gt;%</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ppg =</span> PTS <span class="sc">/</span> G)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="group-by-and-summarise" class="level2">
+<h2 class="anchored" data-anchor-id="group-by-and-summarise">Group By and Summarise</h2>
+<p><code>group_by()</code> and <code>summarise()</code> (or <code>summarize()</code>) can be used together to calculate summary statistics across groups. This can be really powerful, and be done very efficiently in using R. Understanding and using these functions might be less intuitive than the others, but once mastered can prove to be very helpful. Let’s say we want to get the FT% for every team this season.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>team_ft_pct <span class="ot">=</span> players23 <span class="sc">%&gt;%</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Tm) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">team_ft_pct =</span> <span class="fu">sum</span>(FT) <span class="sc">/</span> <span class="fu">sum</span>(FTA))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>team_ft_pct</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 31 × 2
+   Tm    team_ft_pct
+   &lt;chr&gt;       &lt;dbl&gt;
+ 1 ATL         0.812
+ 2 BOS         0.807
+ 3 BRK         0.760
+ 4 CHI         0.794
+ 5 CHO         0.784
+ 6 CLE         0.769
+ 7 DAL         0.756
+ 8 DEN         0.756
+ 9 DET         0.773
+10 GSW         0.788
+# ℹ 21 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="arrange" class="level2">
+<h2 class="anchored" data-anchor-id="arrange">Arrange</h2>
+<p>We see our above result of all 30 NBA teams, but it is difficult to tell who the best FT shooting teams are. Let’s use the <code>arrange()</code> function to sort the <code>team_ft_pct</code> column. We can use this function to arrange the table in ascending or descending order by 1 or more columns. Here, we only arrange on 1 column,</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>team_ft_pct <span class="sc">%&gt;%</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(team_ft_pct)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  Tm    team_ft_pct
+  &lt;chr&gt;       &lt;dbl&gt;
+1 OKC         0.831
+2 PHI         0.829
+3 UTA         0.824
+4 MIA         0.821
+5 LAC         0.819</code></pre>
+</div>
+</div>
+<p>Here we can see the Oklahoma City Thunder are the best FT shooting team this season.</p>
+</section>
+<section id="interlude" class="level2">
+<h2 class="anchored" data-anchor-id="interlude">Interlude</h2>
+<p>Now, I bet we’re all tired of seeing Precious Achiuwa 3 times at the top of every resulting dataframe we have been getting thus far. In a situation where we are not concerned about the team of the player, that is we only want 1 observation per player, we can use <code>dplyr</code> functions to filter out the other subsetted player statistics. In the case for players who have played for multiple teams this season, we only want the observation representing their total across all teams they have played for this season.</p>
+<p>We can use the help of <code>group_by()</code> to sort the players by games played, then filter for only the observation with the most games played for each player. This will correspond to the TOT observation. The cool thing about <code>group_by()</code> is that you can perform other <code>dplyr</code> functions within each group before ungrouping and returning to our original, ungrouped dataframe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="ot">=</span> players23 <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">Player-additional</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(G <span class="sc">==</span> <span class="fu">max</span>(G)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="st">`</span><span class="at">Player-additional</span><span class="st">`</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>players23 <span class="sc">%&gt;%</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 32
+     Rk Player Pos     Age Tm        G    GS    MP    FG   FGA `FG%`  `3P` `3PA`
+  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     1 Preci… C-PF     24 TOT      50    11  1093   169   339 0.499    20    75
+2     2 Bam A… C        26 MIA      46    46  1592   355   693 0.512     1    11
+3     3 Ochai… SG       23 TOT      56    10  1076   117   275 0.425    52   157
+4     4 Santi… PF       23 MEM      45    19  1115   176   411 0.428    75   220
+5     5 Nicke… SG       25 MIN      57    16  1304   144   339 0.425    83   221
+# ℹ 19 more variables: `3P%` &lt;dbl&gt;, `2P` &lt;dbl&gt;, `2PA` &lt;dbl&gt;, `2P%` &lt;dbl&gt;,
+#   `eFG%` &lt;dbl&gt;, FT &lt;dbl&gt;, FTA &lt;dbl&gt;, `FT%` &lt;dbl&gt;, ORB &lt;dbl&gt;, DRB &lt;dbl&gt;,
+#   TRB &lt;dbl&gt;, AST &lt;dbl&gt;, STL &lt;dbl&gt;, BLK &lt;dbl&gt;, TOV &lt;dbl&gt;, PF &lt;dbl&gt;, PTS &lt;dbl&gt;,
+#   `Player-additional` &lt;chr&gt;, ppg &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="rename" class="level2">
+<h2 class="anchored" data-anchor-id="rename">Rename</h2>
+<p>As the name suggests, <code>rename()</code> can be used to rename the name of a column. The new name goes on the left of the equals sign, the corresponding variable goes on the right side of the variable. The variable name <code>Player-additional</code> is pretty long, lets shorten this to <code>id</code>, referring to playerid.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="ot">=</span> players23 <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">id =</span> <span class="st">`</span><span class="at">Player-additional</span><span class="st">`</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>players23 <span class="sc">%&gt;%</span> </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Player, id) <span class="sc">%&gt;%</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  Player                   id       
+  &lt;chr&gt;                    &lt;chr&gt;    
+1 Precious Achiuwa         achiupr01
+2 Bam Adebayo              adebaba01
+3 Ochai Agbaji             agbajoc01
+4 Santi Aldama             aldamsa01
+5 Nickeil Alexander-Walker alexani01</code></pre>
+</div>
+</div>
+</section>
+<section id="drop-na" class="level2">
+<h2 class="anchored" data-anchor-id="drop-na">Drop NA</h2>
+<p>While it sometimes might be malpractice to simply drop the observations with NA values, we can use the <code>drop_na()</code> function to remove these observations for calculations that depend on there not being any NA values in the columns. Let’s analyze a case where this is necessary with FT%.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_ft_pct =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">FT%</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  mean_ft_pct
+        &lt;dbl&gt;
+1          NA</code></pre>
+</div>
+</div>
+<p>Our result of the mean FT% is NA, which isn’t the result we want. This happens because there are players who have not attempted a free throw all season, so their FT% is NA. Let’s drop these players from the dataset just for the sake of this calculation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>players23 <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(<span class="st">`</span><span class="at">FT%</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_ft_pct =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">FT%</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  mean_ft_pct
+        &lt;dbl&gt;
+1       0.753</code></pre>
+</div>
+</div>
+</section>
+<section id="merging" class="level2">
+<h2 class="anchored" data-anchor-id="merging">Merging</h2>
+<p>Almost always with sports analytics projects, you will be using two or more raw datasets and potentially trying to merge them into 1. For example, maybe we have a table with player stats and then another table with team stats. If we want to make some sort of analysis combining each individual player’s stats with their team metrics, we would want to combine these tables based on the player’s team. Here, we have two tables, one with player total stats and one with player advanced stats. Let’s merge these tables together based on playerid.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>advanced23 <span class="ot">=</span> advanced23 <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">Player-additional</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(G)) <span class="sc">%&gt;%</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(G <span class="sc">==</span> <span class="fu">max</span>(G)) <span class="sc">%&gt;%</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="st">`</span><span class="at">Player-additional</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">id =</span> <span class="st">`</span><span class="at">Player-additional</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>full_stats <span class="ot">=</span> <span class="fu">full_join</span>(players23, advanced23, <span class="at">by =</span> <span class="st">"id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">ends_with</span>(<span class="st">".y"</span>))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>full_stats <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 54
+   Rk.x Player.x     Pos.x Age.x Tm.x    G.x    GS  MP.x    FG   FGA `FG%`  `3P`
+  &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     1 Precious Ac… C-PF     24 TOT      50    11  1093   169   339 0.499    20
+2     2 Bam Adebayo  C        26 MIA      46    46  1592   355   693 0.512     1
+3     3 Ochai Agbaji SG       23 TOT      56    10  1076   117   275 0.425    52
+4     4 Santi Aldama PF       23 MEM      45    19  1115   176   411 0.428    75
+5     5 Nickeil Ale… SG       25 MIN      57    16  1304   144   339 0.425    83
+# ℹ 42 more variables: `3PA` &lt;dbl&gt;, `3P%` &lt;dbl&gt;, `2P` &lt;dbl&gt;, `2PA` &lt;dbl&gt;,
+#   `2P%` &lt;dbl&gt;, `eFG%` &lt;dbl&gt;, FT &lt;dbl&gt;, FTA &lt;dbl&gt;, `FT%` &lt;dbl&gt;, ORB &lt;dbl&gt;,
+#   DRB &lt;dbl&gt;, TRB &lt;dbl&gt;, AST &lt;dbl&gt;, STL &lt;dbl&gt;, BLK &lt;dbl&gt;, TOV &lt;dbl&gt;, PF &lt;dbl&gt;,
+#   PTS &lt;dbl&gt;, id &lt;chr&gt;, ppg &lt;dbl&gt;, PER &lt;dbl&gt;, `TS%` &lt;dbl&gt;, `3PAr` &lt;dbl&gt;,
+#   FTr &lt;dbl&gt;, `ORB%` &lt;dbl&gt;, `DRB%` &lt;dbl&gt;, `TRB%` &lt;dbl&gt;, `AST%` &lt;dbl&gt;,
+#   `STL%` &lt;dbl&gt;, `BLK%` &lt;dbl&gt;, `TOV%` &lt;dbl&gt;, `USG%` &lt;dbl&gt;, ...20 &lt;lgl&gt;,
+#   OWS &lt;dbl&gt;, DWS &lt;dbl&gt;, WS &lt;dbl&gt;, `WS/48` &lt;dbl&gt;, ...25 &lt;lgl&gt;, OBPM &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>Now, we have a solid understanding of some of the most important functions in dplyr. Like all tools in R, comfort with <code>dplyr</code> functions are gained over time with practice and implementation. Let’s try to answer some research questions using these functions.</p>
+</section>
+</section>
+<section id="questions" class="level1">
+<h1>Questions</h1>
+<p>Let’s answer these questions together using our dplyr functions.</p>
+<ul>
+<li>Which player is leading the NBA in win shares, <code>WS</code>, this season?</li>
+<li>Which player has the best assist to turnover ratio, having played at least 30 games?</li>
+<li>Does usage percentage, <code>USG%</code>, vary on average between positions?</li>
+<li>Which teams are the best at getting to the FT line? (Note that we cannot merely combine the players FT attempt rate)</li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
