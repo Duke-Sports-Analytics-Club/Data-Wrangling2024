@@ -19,7 +19,7 @@ knitr::opts_chunk$set(message = F, warning = F)
 library(tidyverse)
 ```
 
-Here we load the data using the `read_csv()` function, which comes with `tidyverse`. For this workshop we will look at player data, both standard and advnaced statistics which come separately on Basketball Reference
+Here we load the data using the `read_csv()` function, which comes with `tidyverse`. For this workshop we will look at player data, both standard and advanced statistics which come separately on Basketball Reference
 
 ```{r load-data}
 players23 = read_csv("data/nbatotals23.csv")
@@ -185,14 +185,41 @@ Now, we have a solid understanding of some of the most important functions in dp
 Let's answer these questions together using our dplyr functions.
 
 - Which player is leading the NBA in win shares, `WS`, this season?
-- Which player has the best assist to turnover ratio, having played at least 30 games?
-- Does usage percentage, `USG%`, vary on average between positions?
+
+```{r}
+full_stats %>% arrange(desc(WS)) %>%
+  head(1) %>%
+  select(Player.x, WS)
+```
+
+- Which player has the best assist to turnover ratio, having played at least 1000 minutes?
+
+```{r}
+full_stats %>%
+  filter(MP.x >= 1000) %>%
+  mutate(ast_to = AST / TOV) %>%
+  arrange(desc(ast_to)) %>%
+  select(Player.x, ast_to) %>%
+  head(1)
+```
+- Does mean usage percentage, `USG%`, vary on average between positions?
+
+```{r}
+full_stats %>%
+  group_by(Pos.x) %>%
+  drop_na(`USG%`) %>%
+  summarize(mean_usg = mean(`USG%`)) %>% 
+  arrange(desc(mean_usg))
+```
+
 - Which teams are the best at getting to the FT line? (Note that we cannot merely combine the players FT attempt rate)
 
-- Time permitting, categorizing with quantiles
+```{r}
+full_stats %>%
+  group_by(Tm.x) %>%
+  summarize(ft_ar = sum(FTA) / sum(FGA)) %>%
+  arrange(desc(ft_ar)) %>%
+  head(5)
+```
 
-
-
-
-
-
+Hope this workshop helped with your introduction to data wrangling with `dplyr` functions. Refer to the `dplyr` cheatsheet in the repo, official documentation for `dplyr`, or online tutorials/other resources for more help. Additionally, feel free to reach out to me at `dks43@duke.edu` for any specific questions, data wrangling related or otherwise! 
